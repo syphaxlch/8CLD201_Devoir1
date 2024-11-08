@@ -1,12 +1,12 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#", // Schéma des paramètres pour les modèles ARM
+  "contentVersion": "1.0.0.0", // Version du contenu du fichier de paramètres, utilisé pour la gestion des versions
   "parameters": {
     "vaults_keyvaultdevoir11_name": {
-      "value": "keyvaultdevoir11"
+      "value": "keyvaultdevoir11" // Valeur du paramètre qui représente le nom du Key Vault. Il est ici fixé à "keyvaultdevoir11", mais cela peut être remplacé si nécessaire
     },
     "AdminPass": {
-      "value": null // Paramètre adminPass sans valeur
+      "value": null // Valeur du paramètre "AdminPass", définie ici comme null (pas de valeur initiale). Cela pourrait être remplacé par un mot de passe via une injection de pipeline ou un autre mécanisme
     }
   }
 }

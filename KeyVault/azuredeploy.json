@@ -1,53 +1,54 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#", // Schéma de déploiement ARM
+  "contentVersion": "1.0.0.0", // Version du contenu du modèle, utilisé pour la gestion des versions du modèle
   "parameters": {
     "vaults_keyvaultdevoir11_name": {
-      "defaultValue": "keyvaultdevoir11",
-      "type": "String"
+      "defaultValue": "keyvaultdevoir11", // Nom du Key Vault, peut être modifié via l'injection de paramètres
+      "type": "String" // Type de paramètre : chaîne de caractères
     },
     "AdminPass": {
       "type": "SecureString", // Utilisation de SecureString pour sécuriser le mot de passe
-      "defaultValue": "" // Cette valeur peut être remplacée par l'injection du pipeline
+      "defaultValue": "" // Valeur par défaut vide, à remplacer par un mot de passe sécurisé via pipeline ou autre source
     }
   },
-  "variables": {},
+  "variables": {}, // Pas de variables définies ici, mais peut être étendu selon les besoins
+
   "resources": [
     {
-      "type": "Microsoft.KeyVault/vaults",
-      "apiVersion": "2024-04-01-preview",
-      "name": "[parameters('vaults_keyvaultdevoir11_name')]",
-      "location": "eastus",
+      "type": "Microsoft.KeyVault/vaults", // Définition du type de ressource : Key Vault
+      "apiVersion": "2024-04-01-preview", // Version de l'API utilisée pour la ressource
+      "name": "[parameters('vaults_keyvaultdevoir11_name')]", // Utilisation du paramètre pour définir le nom du Key Vault
+      "location": "eastus", // Localisation du Key Vault dans la région "East US"
       "properties": {
         "sku": {
-          "family": "A",
-          "name": "Standard"
+          "family": "A", // SKU familial, "A" correspond à un SKU standard
+          "name": "Standard" // Type de SKU utilisé pour le Key Vault
         },
-        "tenantId": "f67a368e-685b-450c-8534-89f8086384c0",
-        "accessPolicies": [],
-        "enabledForDeployment": true,
-        "enabledForDiskEncryption": false,
-        "enabledForTemplateDeployment": true,
-        "enableSoftDelete": true,
-        "softDeleteRetentionInDays": 7,
-        "enableRbacAuthorization": true,
-        "vaultUri": "[concat('https://', parameters('vaults_keyvaultdevoir11_name'), '.vault.azure.net/')]",
-        "provisioningState": "Succeeded",
-        "publicNetworkAccess": "Enabled"
+        "tenantId": "f67a368e-685b-450c-8534-89f8086384c0", // Identifiant du tenant Azure pour ce Key Vault
+        "accessPolicies": [], // Aucune politique d'accès définie pour l'instant
+        "enabledForDeployment": true, // Activation du déploiement via ce Key Vault
+        "enabledForDiskEncryption": false, // Désactivation de l'utilisation pour le chiffrement des disques
+        "enabledForTemplateDeployment": true, // Activation de l'utilisation du Key Vault pour des déploiements de modèles ARM
+        "enableSoftDelete": true, // Activation de la suppression douce (soft delete) pour la récupération des ressources supprimées
+        "softDeleteRetentionInDays": 7, // Durée de rétention pour la suppression douce, ici 7 jours
+        "enableRbacAuthorization": true, // Activation de l'autorisation via RBAC (Role-Based Access Control)
+        "vaultUri": "[concat('https://', parameters('vaults_keyvaultdevoir11_name'), '.vault.azure.net/')]", // URL d'accès au Key Vault construite dynamiquement
+        "provisioningState": "Succeeded", // État de la ressource après provisionnement
+        "publicNetworkAccess": "Enabled" // Accès au réseau public activé pour ce Key Vault
       }
     },
     {
-      "type": "Microsoft.KeyVault/vaults/secrets",
-      "apiVersion": "2024-04-01-preview",
-      "name": "[concat(parameters('vaults_keyvaultdevoir11_name'), '/AdminPass')]",
-      "location": "eastus",
+      "type": "Microsoft.KeyVault/vaults/secrets", // Définition du type de ressource : secret dans un Key Vault
+      "apiVersion": "2024-04-01-preview", // Version de l'API utilisée pour la ressource
+      "name": "[concat(parameters('vaults_keyvaultdevoir11_name'), '/AdminPass')]", // Le nom du secret est généré dynamiquement en combinant le nom du Key Vault et "AdminPass"
+      "location": "eastus", // Localisation du secret dans la région "East US"
       "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_keyvaultdevoir11_name'))]"
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_keyvaultdevoir11_name'))]" // Dépendance du secret vis-à-vis du Key Vault
       ],
       "properties": {
-        "value": "[parameters('AdminPass')]", // Utilise le paramètre AdminPass ici
+        "value": "[parameters('AdminPass')]", // Valeur du secret, qui est le paramètre AdminPass (sensible et sécurisé)
         "attributes": {
-          "enabled": true
+          "enabled": true // Activation du secret (par défaut activé)
         }
       }
     }
