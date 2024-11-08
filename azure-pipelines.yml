@@ -27,7 +27,7 @@ steps:
 - task: AzureKeyVault@2
   inputs:
     azureSubscription: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
-    KeyVaultName: 'keyvaulttravail1'
+    KeyVaultName: 'keyvaultdevoir11'
     SecretsFilter: 'AdminPass'
     RunAsPreJob: false
 - task: PowerShell@2
