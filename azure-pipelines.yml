@@ -39,8 +39,7 @@ jobs:
           location: 'East US'  # Région du déploiement
           templateLocation: 'Linked artifact'
           csmFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.json'  # Fichier template ARM pour déployer le VM Scale Set
-          csmParametersFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.parameters.json'  # Fichier des paramètres pour le VM Scale Set
-          overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)'  # Paramètres pour la configuration initiale et le mot de passe admin
+          csmParametersFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.parameters.json'  # Fichier des paramètres pour le VM Scale Sets
           deploymentMode: 'Validation'  # Mode Validation pour tester sans effectuer de modifications réelles
 
   # Job de déploiement réel après la validation réussie
