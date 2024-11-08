@@ -1,5 +1,5 @@
 trigger:
-- master
+- az
 
 pool:
   "default"
@@ -20,6 +20,8 @@ steps:
     templateLocation: 'Linked artifact'
     csmFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.json'
     csmParametersFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.parameters.json'
+    overrideParameters: |
+        -AdminPass $(secret)
     deploymentMode: 'Incremental'
 
 - task: AzureResourceManagerTemplateDeployment@3
