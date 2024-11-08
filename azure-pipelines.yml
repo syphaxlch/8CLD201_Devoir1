@@ -1,15 +1,12 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - master
 
 pool:
   "default"
+
 variables:
   - name: CloudInitContent
+
 
 steps:
 - task: AzureResourceManagerTemplateDeployment@3
@@ -25,6 +22,19 @@ steps:
     csmParametersFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.parameters.json'
     deploymentMode: 'Incremental'
 
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
+    subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: 'RG2'
+    location: 'East US'
+    templateLocation: 'Linked artifact'
+    csmFile: '$(Build.SourcesDirectory)\KeyVault\addSecretTemplate.json'
+    overrideParameters: '-vaultName $(KeyVaultName) -secretValue $(AdminPass)'
+    deploymentMode: 'Incremental'
+
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
@@ -33,8 +43,6 @@ steps:
       $EncodedContent = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($CloudContent))
       Write-Host $encodedContent
       Write-Host "##vso[task.setvariable variable=CloudInitContent;]$encodedContent"
-- script:
-    echo $(CloudInitContent)
 
 - task: AzureResourceManagerTemplateDeployment@3
   inputs:
