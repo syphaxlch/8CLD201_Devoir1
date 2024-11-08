@@ -6,7 +6,7 @@
       "value": "keyvaultdevoir11" // Valeur du paramètre qui représente le nom du Key Vault. Il est ici fixé à "keyvaultdevoir11", mais cela peut être remplacé si nécessaire
     },
     "AdminPass": {
-      "value": null // Valeur du paramètre "AdminPass", définie ici comme null (pas de valeur initiale). Cela pourrait être remplacé par un mot de passe via une injection de pipeline ou un autre mécanisme
+      "value": "TemporaryPasswordForValidation" // Valeur du paramètre "AdminPass", définie ici comme null (pas de valeur initiale). Cela pourrait être remplacé par un mot de passe via une injection de pipeline ou un autre mécanisme
     }
   }
 }
