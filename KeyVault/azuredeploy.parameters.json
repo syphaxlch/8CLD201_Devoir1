@@ -45,6 +45,9 @@
         "ipRules": [],
         "virtualNetworkRules": []
       }
+    },
+    "secretValue": {
+      "value": "MySecretValue" // Valeur du secret ici
     }
   }
 }
