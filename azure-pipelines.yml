@@ -36,7 +36,6 @@ steps:
 - script:
     echo $(CloudInitContent)
 
-    
 - task: AzureResourceManagerTemplateDeployment@3
   inputs:
     deploymentScope: 'Resource Group'
