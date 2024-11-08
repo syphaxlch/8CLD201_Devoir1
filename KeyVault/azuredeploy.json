@@ -30,7 +30,7 @@
       "type": "bool"
     },
     "publicNetworkAccess": {
-      "type": "string "
+      "type": "string"
     },
     "enableSoftDelete": {
       "type": "bool"
@@ -40,6 +40,9 @@
     },
     "networkAcls": {
       "type": "object"
+    },
+    "secretValue": {
+      "type": "securestring" // Paramètre pour la valeur du secret
     }
   },
   "variables": {},
@@ -67,6 +70,20 @@
       },
       "tags": {},
       "dependsOn": []
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2023-08-01-preview",
+      "name": "[concat(parameters('name'), '/MySecret')]", // Nom du secret
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('name'))]"
+      ],
+      "properties": {
+        "value": "[parameters('secretValue')]", // Utilisation du paramètre du secret
+        "attributes": {
+          "enabled": true
+        }
+      }
     }
   ],
   "outputs": {}
