@@ -10,7 +10,7 @@ variables:
 
 steps:
 - task: AzureResourceManagerTemplateDeployment@3
-  inputs:
+  inputs: 
     deploymentScope: 'Resource Group'
     azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
     subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
