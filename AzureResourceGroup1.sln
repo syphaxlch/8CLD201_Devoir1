@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "AzureResourceGroup1", "AzureResourceGroup1\AzureResourceGroup1.deployproj", "{BC31BE57-1D60-4406-BB91-6419BBC5F1F5}"
 EndProject
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "KeyVault", "KeyVault\KeyVault.deployproj", "{48E128DB-C453-4721-B343-FD5B2BAE337E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{BC31BE57-1D60-4406-BB91-6419BBC5F1F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC31BE57-1D60-4406-BB91-6419BBC5F1F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC31BE57-1D60-4406-BB91-6419BBC5F1F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48E128DB-C453-4721-B343-FD5B2BAE337E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48E128DB-C453-4721-B343-FD5B2BAE337E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48E128DB-C453-4721-B343-FD5B2BAE337E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48E128DB-C453-4721-B343-FD5B2BAE337E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
