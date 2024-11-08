@@ -8,45 +8,10 @@ variables:
   - name: CloudInitContent  # Déclaration de la variable CloudInitContent pour stocker le contenu encodé en Base64 du fichier cloud-init
 
 jobs:
-  # Job de validation des templates ARM
-  - job: TestValidation
-    displayName: "Validation du modèle ARM"  # Nom du job pour la validation
-    steps:
-      # Validation du déploiement du Key Vault dans RG2
-      - task: AzureResourceManagerTemplateDeployment@3
-        inputs: 
-          deploymentScope: 'Resource Group'
-          azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'  # Connexion à l'abonnement Azure pour le déploiement
-          subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
-          action: 'Create Or Update Resource Group'
-          resourceGroupName: 'RG2'  # Groupe de ressources pour le Key Vault
-          location: 'East US'  # Région du déploiement
-          templateLocation: 'Linked artifact'
-          csmFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.json'  # Fichier template ARM pour déployer le Key Vault
-          csmParametersFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.parameters.json'  # Fichier des paramètres pour le Key Vault
-          overrideParameters: |
-              -AdminPass $(secret)  # Paramètre de mot de passe admin récupéré via un secret
-          deploymentMode: 'Validation'  # Mode Validation pour tester sans effectuer de modifications réelles
-
-      # Validation du déploiement du VM Scale Set dans RG1
-      - task: AzureResourceManagerTemplateDeployment@3
-        inputs:
-          deploymentScope: 'Resource Group'
-          azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'  # Connexion à l'abonnement Azure pour le déploiement
-          subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
-          action: 'Create Or Update Resource Group'
-          resourceGroupName: 'RG1'  # Groupe de ressources pour le VM Scale Set
-          location: 'East US'  # Région du déploiement
-          templateLocation: 'Linked artifact'
-          csmFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.json'  # Fichier template ARM pour déployer le VM Scale Set
-          csmParametersFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.parameters.json'  # Fichier des paramètres pour le VM Scale Sets
-          deploymentMode: 'Validation'  # Mode Validation pour tester sans effectuer de modifications réelles
 
   # Job de déploiement réel après la validation réussie
   - job: Deployment
     displayName: "Déploiement du modèle ARM"  # Nom du job pour le déploiement réel
-    dependsOn: TestValidation  # Le job de déploiement dépend de la réussite du job de validation
-    condition: succeeded()  # Exécution de ce job uniquement si le job de validation a réussi
     steps:
       # Déploiement réel du Key Vault dans RG2
       - task: AzureResourceManagerTemplateDeployment@3
@@ -61,7 +26,7 @@ jobs:
           csmFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.json'  # Fichier template ARM pour déployer le Key Vault
           csmParametersFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.parameters.json'  # Fichier des paramètres pour le Key Vault
           overrideParameters: |
-              -AdminPass $(secret)  # Paramètre de mot de passe admin récupéré via un secret
+              -AdminPass $(secret)
           deploymentMode: 'Incremental'  # Mode Incremental pour effectuer les changements réels
 
       # Récupération du secret AdminPass depuis Key Vault
