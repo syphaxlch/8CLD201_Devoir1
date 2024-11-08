@@ -1,90 +1,55 @@
 {
-  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "name": {
-      "type": "string"
+    "vaults_keyvaultdevoir11_name": {
+      "defaultValue": "keyvaultdevoir11",
+      "type": "String"
     },
-    "location": {
-      "type": "string"
-    },
-    "sku": {
-      "type": "string"
-    },
-    "accessPolicies": {
-      "type": "array"
-    },
-    "tenant": {
-      "type": "string"
-    },
-    "enabledForDeployment": {
-      "type": "bool"
-    },
-    "enabledForTemplateDeployment": {
-      "type": "bool"
-    },
-    "enabledForDiskEncryption": {
-      "type": "bool"
-    },
-    "enableRbacAuthorization": {
-      "type": "bool"
-    },
-    "publicNetworkAccess": {
-      "type": "string"
-    },
-    "enableSoftDelete": {
-      "type": "bool"
-    },
-    "softDeleteRetentionInDays": {
-      "type": "int"
-    },
-    "networkAcls": {
-      "type": "object"
-    },
-    "secretValue": {
-      "type": "securestring" // Paramètre pour la valeur du secret
+    "AdminPass": {
+      "type": "SecureString", // Utilisation de SecureString pour sécuriser le mot de passe
+      "defaultValue": "" // Cette valeur peut être remplacée par l'injection du pipeline
     }
   },
   "variables": {},
   "resources": [
     {
-      "apiVersion": "2023-08-01-preview",
-      "name": "[parameters('name')]",
-      "location": "[parameters('location')]",
       "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2024-04-01-preview",
+      "name": "[parameters('vaults_keyvaultdevoir11_name')]",
+      "location": "eastus",
       "properties": {
-        "enabledForDeployment": "[parameters('enabledForDeployment')]",
-        "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
-        "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
-        "enableRbacAuthorization": "[parameters('enableRbacAuthorization')]",
-        "accessPolicies": "[parameters('accessPolicies')]",
-        "tenantId": "[parameters('tenant')]",
         "sku": {
-          "name": "[parameters('sku')]",
-          "family": "A"
+          "family": "A",
+          "name": "Standard"
         },
-        "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
-        "enableSoftDelete": "[parameters('enableSoftDelete')]",
-        "softDeleteRetentionInDays": "[parameters('softDeleteRetentionInDays')]",
-        "networkAcls": "[parameters('networkAcls')]"
-      },
-      "tags": {},
-      "dependsOn": []
+        "tenantId": "f67a368e-685b-450c-8534-89f8086384c0",
+        "accessPolicies": [],
+        "enabledForDeployment": true,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": true,
+        "enableSoftDelete": true,
+        "softDeleteRetentionInDays": 7,
+        "enableRbacAuthorization": true,
+        "vaultUri": "[concat('https://', parameters('vaults_keyvaultdevoir11_name'), '.vault.azure.net/')]",
+        "provisioningState": "Succeeded",
+        "publicNetworkAccess": "Enabled"
+      }
     },
     {
       "type": "Microsoft.KeyVault/vaults/secrets",
-      "apiVersion": "2023-08-01-preview",
-      "name": "[concat(parameters('name'), '/MySecret')]", // Nom du secret
+      "apiVersion": "2024-04-01-preview",
+      "name": "[concat(parameters('vaults_keyvaultdevoir11_name'), '/AdminPass')]",
+      "location": "eastus",
       "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', parameters('name'))]"
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_keyvaultdevoir11_name'))]"
       ],
       "properties": {
-        "value": "[parameters('secretValue')]", // Utilisation du paramètre du secret
+        "value": "[parameters('AdminPass')]", // Utilise le paramètre AdminPass ici
         "attributes": {
           "enabled": true
         }
       }
     }
-  ],
-  "outputs": {}
+  ]
 }
