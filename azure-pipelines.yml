@@ -1,0 +1,89 @@
+trigger: 
+  - master
+
+pool:
+  "default"
+
+variables:
+  - name: CloudInitContent
+
+jobs:
+  - job: TestValidation
+    displayName: "Validation du modèle ARM"
+    steps:
+      - task: AzureResourceManagerTemplateDeployment@3
+        inputs: 
+          deploymentScope: 'Resource Group'
+          azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
+          subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
+          action: 'Create Or Update Resource Group'
+          resourceGroupName: 'RG2'
+          location: 'East US'
+          templateLocation: 'Linked artifact'
+          csmFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.json'
+          csmParametersFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.parameters.json'
+          overrideParameters: |
+              -AdminPass $(secret)
+          deploymentMode: 'Validation'
+      - task: AzureResourceManagerTemplateDeployment@3
+        inputs:
+          deploymentScope: 'Resource Group'
+          azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
+          subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
+          action: 'Create Or Update Resource Group'
+          resourceGroupName: 'RG1'
+          location: 'East US'
+          templateLocation: 'Linked artifact'
+          csmFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.json'
+          csmParametersFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.parameters.json'
+          overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)'
+          deploymentMode: 'Validation'
+
+  - job: Deployment
+    displayName: "Déploiement du modèle ARM"
+    dependsOn: TestValidation
+    condition: succeeded()
+    steps:
+      - task: AzureResourceManagerTemplateDeployment@3
+        inputs: 
+          deploymentScope: 'Resource Group'
+          azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
+          subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
+          action: 'Create Or Update Resource Group'
+          resourceGroupName: 'RG2'
+          location: 'East US'
+          templateLocation: 'Linked artifact'
+          csmFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.json'
+          csmParametersFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.parameters.json'
+          overrideParameters: |
+              -AdminPass $(secret)
+          deploymentMode: 'Incremental'
+      - task: AzureKeyVault@2
+        inputs:
+          azureSubscription: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
+          KeyVaultName: 'keyvaultdevoir11'
+          SecretsFilter: 'AdminPass'
+          RunAsPreJob: false
+
+      - task: PowerShell@2
+        inputs:
+          targetType: 'inline'
+          script: |
+            $CloudContent = Get-Content -Path .\AzureResourceGroup1\cloud-init.txt -RAW
+            $EncodedContent = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($CloudContent))
+            Write-Host $encodedContent
+            Write-Host "##vso[task.setvariable variable=CloudInitContent;]$encodedContent"
+
+      - task: AzureResourceManagerTemplateDeployment@3
+        inputs:
+          deploymentScope: 'Resource Group'
+          azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
+          subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
+          action: 'Create Or Update Resource Group'
+          resourceGroupName: 'RG1'
+          location: 'East US'
+          templateLocation: 'Linked artifact'
+          csmFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.json'
+          csmParametersFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.parameters.json'
+          overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)'
+          deploymentMode: 'Incremental'
