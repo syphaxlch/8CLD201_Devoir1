@@ -24,19 +24,12 @@ steps:
         -AdminPass $(secret)
     deploymentMode: 'Incremental'
 
-- task: AzureResourceManagerTemplateDeployment@3
+- task: AzureKeyVault@2
   inputs:
-    deploymentScope: 'Resource Group'
-    azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
-    subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
-    action: 'Create Or Update Resource Group'
-    resourceGroupName: 'RG2'
-    location: 'East US'
-    templateLocation: 'Linked artifact'
-    csmFile: '$(Build.SourcesDirectory)\KeyVault\addSecretTemplate.json'
-    overrideParameters: '-vaultName $(KeyVaultName) -secretValue $(AdminPass)'
-    deploymentMode: 'Incremental'
-
+    azureSubscription: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
+    KeyVaultName: 'keyvaulttravail1'
+    SecretsFilter: 'AdminPass'
+    RunAsPreJob: false
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
