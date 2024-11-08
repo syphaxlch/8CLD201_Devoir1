@@ -180,4 +180,77 @@
     },
     "vnetPublicIpAddressesTags": "[if(contains(parameters('vnetTagsByResource'), 'Microsoft.Network/publicIpAddresses'), parameters('vnetTagsByResource')['Microsoft.Network/publicIpAddresses'], json('{}'))]",  // Récupère les balises des adresses IP publiques si présentes.
     "vnetNatGatewayTags": "[if(contains(parameters('vnetTagsByResource'), 'Microsoft.Network/natGateways'), parameters('vnetTagsByResource')['Microsoft.Network/natGateways'], json('{}'))]"  // Récupère les balises des NAT Gateways si présentes.
- 
+  },
+  "resources": [  // Ressources à déployer sur Azure.
+    {  // Déploiement d'un groupe de sécurité réseau.
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "[variables('networkApiVersion')]",
+      "name": "[parameters('networkSecurityGroups')[copyIndex()]]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [  // Règles de sécurité pour chaque NSG.
+          {
+            "name": "[format('Allow-RDP-{0}', variables('namingInfix'))]",
+            "properties": {
+              "description": "Allow RDP",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "direction": "Inbound",
+              "priority": 100
+            }
+          }
+        ]
+      },
+      "copy": {
+        "name": "networkSecurityGroupCopy",
+        "count": "[length(parameters('networkSecurityGroups'))]"
+      }
+    },
+    {  // Déploiement du Load Balancer.
+      "type": "Microsoft.Network/loadBalancers",
+      "apiVersion": "[variables('networkApiVersion')]",
+      "name": "[parameters('loadBalancerName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "frontendIPConfigurations": [  // Configuration frontend du Load Balancer.
+          {
+            "name": "LoadBalancerFrontend",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('loadBalancerName'))]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [  // Pool d'adresses backend.
+          {
+            "name": "[parameters('backendPoolName')]"
+          }
+        ],
+        "loadBalancingRules": [  // Règles du Load Balancer.
+          {
+            "name": "[concat(parameters('loadBalancerName'), '-rule')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', parameters('loadBalancerName'), 'LoadBalancerFrontend')]"
+              },
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('loadBalancerName'), parameters('backendPoolName'))]"
+              },
+              "probe": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/probes', parameters('loadBalancerName'), 'probe')]"
+              },
+              "protocol": "[parameters('loadbalancingRuleProtocol')]",
+              "frontendPort": "[parameters('loadbalancingRuleFrontEndPort')]",
+              "backendPort": "[parameters('loadbalancingRuleBackendEndPort')]"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
