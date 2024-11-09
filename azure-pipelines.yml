@@ -12,6 +12,8 @@ jobs:
     displayName: "Validation du modèle ARM"
     steps:
       - task: AzureResourceManagerTemplateDeployment@3
+        displayName: "Validation Key Vaults"
+        name: 'ValidationKeyVaults'
         inputs: 
           deploymentScope: 'Resource Group'
           azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
@@ -26,6 +28,8 @@ jobs:
               -AdminPass $(secret)
           deploymentMode: 'Validation'
       - task: AzureResourceManagerTemplateDeployment@3
+        displayName: "Validation VM scale sets"
+        name: 'ValidationVMSS'      
         inputs:
           deploymentScope: 'Resource Group'
           azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
@@ -45,6 +49,8 @@ jobs:
     condition: succeeded()
     steps:
       - task: AzureResourceManagerTemplateDeployment@3
+        displayName: "Deploiement Key Vaults"
+        name: 'DeploiementKeyVaults'      
         inputs: 
           deploymentScope: 'Resource Group'
           azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
@@ -75,6 +81,8 @@ jobs:
             Write-Host "##vso[task.setvariable variable=CloudInitContent;]$encodedContent"
 
       - task: AzureResourceManagerTemplateDeployment@3
+        displayName: "Deploiement du VMSS"
+        name: 'DeploiementVMSS'      
         inputs:
           deploymentScope: 'Resource Group'
           azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
