@@ -44,8 +44,8 @@ jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour 
           overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)' #changemenet des valeurs des parametres
           deploymentMode: 'Validation'
 
-  - job: Deployment
-    displayName: "Déploiement du modèle ARM"
+  - job: Deployment #Le job de deploiement
+    displayName: "Déploiement du modèle ARM" #Le nom qui sera affiché lors du deploiement
     dependsOn: TestValidation
     condition: succeeded()
     steps:
@@ -74,12 +74,25 @@ jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour 
 
       - task: PowerShell@2
         inputs:
-          targetType: 'inline'
+          targetType: 'inline' #Le powershell s'éxecute en mode inline
           script: |
+            # Lire le contenu du fichier cloud-init.txt dans le dossier AzureResourceGroup1 
+            # et le stocker dans la variable $CloudContent.
             $CloudContent = Get-Content -Path .\AzureResourceGroup1\cloud-init.txt -RAW
+            
+            # Convertir le contenu du fichier texte en chaîne Base64.
+            # Cela permet de garantir que le contenu peut être utilisé dans des paramètres
+            # ou des variables qui exigent une chaîne encodée (par exemple, pour les paramètres Azure).
             $EncodedContent = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($CloudContent))
+            
+            # Afficher le contenu encodé en Base64 dans les logs pour vérifier le résultat.
             Write-Host $encodedContent
+            
+            # Définir une variable pipeline Azure DevOps nommée CloudInitContent
+            # et y assigner la valeur encodée en Base64.
+            # Cette variable peut être utilisée dans d'autres étapes du pipeline.
             Write-Host "##vso[task.setvariable variable=CloudInitContent;]$encodedContent"
+
 
       - task: AzureResourceManagerTemplateDeployment@3
         displayName: "Deploiement du VMSS"
