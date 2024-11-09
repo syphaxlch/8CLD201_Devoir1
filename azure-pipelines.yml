@@ -1,35 +1,35 @@
+
 trigger: 
-  - master # Déclenche le pipeline lorsque des modifications sont poussées dans la branche "master"
+  - master
 
 pool:
-  "default" # Utilise le pool d'agents par défaut pour exécuter les tâches
+  "default"
 
 variables:
-  - name: CloudInitContent # Variable pour stocker le contenu encodé en Base64 du fichier cloud-init
+  - name: CloudInitContent
 
 jobs:
   - job: TestValidation
-    displayName: "Validation du modèle ARM" # Nom du job de validation des modèles ARM
+    displayName: "Validation du modèle ARM"
     steps:
       - task: AzureResourceManagerTemplateDeployment@3
-        displayName: "Validation Key Vaults" # Valide le déploiement des Key Vaults
+        displayName: "Validation Key Vaults"
         name: 'ValidationKeyVaults'
         inputs: 
-          deploymentScope: 'Resource Group' # Spécifie le groupe de ressources comme périmètre de déploiement
-          azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)' # Connexion au service Azure
-          subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a' # ID de l'abonnement Azure
-          action: 'Create Or Update Resource Group' # Crée ou met à jour le groupe de ressources
-          resourceGroupName: 'RG2' # Nom du groupe de ressources pour le déploiement
-          location: 'East US' # Région de déploiement
-          templateLocation: 'Linked artifact' # Modèle situé dans un artefact lié
-          csmFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.json' # Chemin vers le modèle ARM Key Vault
-          csmParametersFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.parameters.json' # Chemin vers le fichier de paramètres ARM
+          deploymentScope: 'Resource Group'
+          azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
+          subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
+          action: 'Create Or Update Resource Group'
+          resourceGroupName: 'RG2'
+          location: 'East US'
+          templateLocation: 'Linked artifact'
+          csmFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.json'
+          csmParametersFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.parameters.json'
           overrideParameters: |
-              -AdminPass $(secret) # Remplace le paramètre AdminPass par une variable secrète
-          deploymentMode: 'Validation' # Mode de validation pour vérifier le modèle sans effectuer de déploiement
-
+              -AdminPass $(secret)
+          deploymentMode: 'Validation'
       - task: AzureResourceManagerTemplateDeployment@3
-        displayName: "Validation VM scale sets" # Valide le déploiement des machines virtuelles scale sets
+        displayName: "Validation VM scale sets"
         name: 'ValidationVMSS'      
         inputs:
           deploymentScope: 'Resource Group'
@@ -41,16 +41,16 @@ jobs:
           templateLocation: 'Linked artifact'
           csmFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.json'
           csmParametersFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.parameters.json'
-          overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)' # Passe le contenu cloud-init et le mot de passe admin
+          overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)'
           deploymentMode: 'Validation'
 
   - job: Deployment
-    displayName: "Déploiement du modèle ARM" # Job de déploiement du modèle ARM après validation
-    dependsOn: TestValidation # Ce job dépend du succès du job TestValidation
-    condition: succeeded() # Exécute ce job uniquement si TestValidation a réussi
+    displayName: "Déploiement du modèle ARM"
+    dependsOn: TestValidation
+    condition: succeeded()
     steps:
       - task: AzureResourceManagerTemplateDeployment@3
-        displayName: "Deploiement Key Vaults" # Déploie les Key Vaults
+        displayName: "Deploiement Key Vaults"
         name: 'DeploiementKeyVaults'      
         inputs: 
           deploymentScope: 'Resource Group'
@@ -64,26 +64,25 @@ jobs:
           csmParametersFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.parameters.json'
           overrideParameters: |
               -AdminPass $(secret)
-          deploymentMode: 'Incremental' # Mode incrémental pour ajouter ou mettre à jour des ressources sans supprimer les existantes
-
+          deploymentMode: 'Incremental'
       - task: AzureKeyVault@2
         inputs:
           azureSubscription: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
-          KeyVaultName: 'keyvaultdevoir11' # Nom du Key Vault
-          SecretsFilter: 'AdminPass' # Filtre pour télécharger uniquement le secret "AdminPass"
-          RunAsPreJob: false # Définit cette tâche comme étape principale et non préalable
+          KeyVaultName: 'keyvaultdevoir11'
+          SecretsFilter: 'AdminPass'
+          RunAsPreJob: false
 
       - task: PowerShell@2
         inputs:
           targetType: 'inline'
           script: |
-            $CloudContent = Get-Content -Path .\AzureResourceGroup1\cloud-init.txt -RAW # Lit le contenu du fichier cloud-init
-            $EncodedContent = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($CloudContent)) # Encode le contenu en Base64
+            $CloudContent = Get-Content -Path .\AzureResourceGroup1\cloud-init.txt -RAW
+            $EncodedContent = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($CloudContent))
             Write-Host $encodedContent
-            Write-Host "##vso[task.setvariable variable=CloudInitContent;]$encodedContent" # Stocke le contenu encodé dans la variable CloudInitContent
+            Write-Host "##vso[task.setvariable variable=CloudInitContent;]$encodedContent"
 
       - task: AzureResourceManagerTemplateDeployment@3
-        displayName: "Deploiement du VMSS" # Déploie le VM scale set avec des paramètres encodés
+        displayName: "Deploiement du VMSS"
         name: 'DeploiementVMSS'      
         inputs:
           deploymentScope: 'Resource Group'
@@ -95,5 +94,5 @@ jobs:
           templateLocation: 'Linked artifact'
           csmFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.json'
           csmParametersFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.parameters.json'
-          overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)' # Passe les données cloud-init et le mot de passe admin
-          deploymentMode: 'Incremental' # Mode de déploiement incrémental
+          overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)'
+          deploymentMode: 'Incremental'
