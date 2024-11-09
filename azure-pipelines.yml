@@ -1,5 +1,5 @@
 trigger: 
-  - master  # Déclenche le pipeline sur la branche master
+  - feature/azure-pipelines  # Déclenche le pipeline sur la branche master
 
 pool:
   "default"  # Utilisation de l'agent par défaut pour exécuter le pipeline
