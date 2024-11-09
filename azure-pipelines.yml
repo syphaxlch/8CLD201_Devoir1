@@ -60,12 +60,12 @@ jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour 
           resourceGroupName: 'RG2'
           location: 'East US'
           templateLocation: 'Linked artifact'
-          csmFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.json'
+          csmFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.json' #Le répertoire $(Build.SourcesDirectory) se situe dans l'agent de build
           csmParametersFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.parameters.json'
           overrideParameters: |
               -AdminPass $(secret)
           deploymentMode: 'Incremental'
-      - task: AzureKeyVault@2
+      - task: AzureKeyVault@2 #Rrecuperation du secret
         inputs:
           azureSubscription: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
           KeyVaultName: 'keyvaultdevoir11'
