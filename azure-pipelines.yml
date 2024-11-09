@@ -6,9 +6,9 @@ pool:
   "default"
 
 variables:
-  - name: CloudInitContent
+  - name: CloudInitContent #La variable qui va stocker la configuration du site
 
-jobs:
+jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour le deploiement
   - job: TestValidation
     displayName: "Validation du modèle ARM"
     steps:
@@ -20,14 +20,14 @@ jobs:
           azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
           subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
           action: 'Create Or Update Resource Group'
-          resourceGroupName: 'RG2'
+          resourceGroupName: 'RG2' #nom du ressource groupe
           location: 'East US'
           templateLocation: 'Linked artifact'
           csmFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.json'
           csmParametersFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.parameters.json'
           overrideParameters: |
               -AdminPass $(secret)
-          deploymentMode: 'Validation'
+          deploymentMode: 'Validation' # le mode de deployement 'validation' permet de compiler et valider uniquement
       - task: AzureResourceManagerTemplateDeployment@3
         displayName: "Validation VM scale sets"
         name: 'ValidationVMSS'      
@@ -36,16 +36,16 @@ jobs:
           azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
           subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
           action: 'Create Or Update Resource Group'
-          resourceGroupName: 'RG1'
+          resourceGroupName: 'RG1' #nom du ressource groupe
           location: 'East US'
           templateLocation: 'Linked artifact'
           csmFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.json'
           csmParametersFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.parameters.json'
-          overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)'
+          overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)' #changemenet des valeurs des parametres
           deploymentMode: 'Validation'
 
-  - job: Deployment
-    displayName: "Déploiement du modèle ARM"
+  - job: Deployment #Le job de deploiement
+    displayName: "Déploiement du modèle ARM" #Le nom qui sera affiché lors du deploiement
     dependsOn: TestValidation
     condition: succeeded()
     steps:
@@ -60,12 +60,12 @@ jobs:
           resourceGroupName: 'RG2'
           location: 'East US'
           templateLocation: 'Linked artifact'
-          csmFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.json'
+          csmFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.json' #Le répertoire $(Build.SourcesDirectory) se situe dans l'agent de build
           csmParametersFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.parameters.json'
           overrideParameters: |
               -AdminPass $(secret)
           deploymentMode: 'Incremental'
-      - task: AzureKeyVault@2
+      - task: AzureKeyVault@2 #Rrecuperation du secret
         inputs:
           azureSubscription: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
           KeyVaultName: 'keyvaultdevoir11'
@@ -74,12 +74,25 @@ jobs:
 
       - task: PowerShell@2
         inputs:
-          targetType: 'inline'
+          targetType: 'inline' #Le powershell s'éxecute en mode inline
           script: |
+            # Lire le contenu du fichier cloud-init.txt dans le dossier AzureResourceGroup1 
+            # et le stocker dans la variable $CloudContent.
             $CloudContent = Get-Content -Path .\AzureResourceGroup1\cloud-init.txt -RAW
+            
+            # Convertir le contenu du fichier texte en chaîne Base64.
+            # Cela permet de garantir que le contenu peut être utilisé dans des paramètres
+            # ou des variables qui exigent une chaîne encodée (par exemple, pour les paramètres Azure).
             $EncodedContent = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($CloudContent))
+            
+            # Afficher le contenu encodé en Base64 dans les logs pour vérifier le résultat.
             Write-Host $encodedContent
+            
+            # Définir une variable pipeline Azure DevOps nommée CloudInitContent
+            # et y assigner la valeur encodée en Base64.
+            # Cette variable peut être utilisée dans d'autres étapes du pipeline.
             Write-Host "##vso[task.setvariable variable=CloudInitContent;]$encodedContent"
+
 
       - task: AzureResourceManagerTemplateDeployment@3
         displayName: "Deploiement du VMSS"
