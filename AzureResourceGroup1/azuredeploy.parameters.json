@@ -1,34 +1,36 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#", // Schéma de validation pour les fichiers de paramètres de déploiement ARM
-  "contentVersion": "1.0.0.0", // Version du contenu pour le suivi des versions du fichier de paramètres
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
   "parameters": {
     "location": {
-      "value": "eastus" // La localisation de toutes les ressources déployées, ici définie sur "East US"
+      "value": "eastus"
     },
     "osDiskType": {
-      "value": "StandardSSD_LRS" // Type de disque pour le système d'exploitation des VM, ici un disque SSD standard avec redondance locale (LRS)
+      "value": "StandardSSD_LRS"
     },
     "virtualNetworkId": {
-      "value": "/subscriptions/48795d1d-efc3-44f3-a40e-3565ec977a1a/resourceGroups/RG1/providers/Microsoft.Network/virtualNetworks/vnet-eastus" // L'ID du réseau virtuel dans lequel les VM seront déployées
+      "value": "/subscriptions/48795d1d-efc3-44f3-a40e-3565ec977a1a/resourceGroups/RG1/providers/Microsoft.Network/virtualNetworks/vnet-eastus"
     },
     "virtualNetworkName": {
-      "value": "vnet-eastus" // Le nom du réseau virtuel
+      "value": "vnet-eastus"
     },
     "networkSecurityGroups": {
       "value": [
         {
-          "name": "basicNsgvnet-eastus-nic01", // Nom du groupe de sécurité réseau (NSG) pour la carte réseau
-          "id": "/subscriptions/48795d1d-efc3-44f3-a40e-3565ec977a1a/resourceGroups/RG1/providers/Microsoft.Network/networkSecurityGroups/basicNsgvnet-eastus-nic01", // ID du NSG
+          "name": "basicNsgvnet-eastus-nic01",
+          "id": "/subscriptions/48795d1d-efc3-44f3-a40e-3565ec977a1a/resourceGroups/RG1/providers/Microsoft.Network/networkSecurityGroups/basicNsgvnet-eastus-nic01",
           "rules": [
             {
-              "name": "Tcp", // Nom de la règle de sécurité
+              "name": "Tcp",
               "properties": {
-                "priority": 300, // Priorité de la règle
-                "protocol": "Tcp", // Protocole autorisé (ici TCP)
-                "access": "Allow", // Autorisation du trafic
-                "direction": "Inbound", // Trafic entrant
-                "sourceAddressPrefix": "*", // Source de n'importe quelle adresse
-                "destinationPortRange": "80" // Port de destination (HTTP standard)
+                "priority": 300,
+                "protocol": "Tcp",
+                "access": "Allow",
+                "direction": "Inbound",
+                "sourceAddressPrefix": "*",
+                "sourcePortRange": "*",
+                "destinationAddressPrefix": "*",
+                "destinationPortRange": "80"
               }
             }
           ]
@@ -38,124 +40,140 @@
     "networkInterfaceConfigurations": {
       "value": [
         {
-          "name": "vnet-eastus-nic01", // Nom de l'interface réseau
-          "primary": true, // Spécifie que c'est l'interface principale de la VM
-          "subnetId": "/subscriptions/48795d1d-efc3-44f3-a40e-3565ec977a1a/resourceGroups/RG1/providers/Microsoft.Network/virtualNetworks/vnet-eastus/subnets/snet-eastus-1", // ID du sous-réseau où l'interface sera attachée
-          "nsgName": "basicNsgvnet-eastus-nic01", // Nom du NSG à appliquer à cette interface
-          "pipName": "publicIp-vnet-eastus-nic01" // Nom de l'adresse IP publique associée à l'interface
+          "name": "vnet-eastus-nic01",
+          "primary": true,
+          "subnetId": "/subscriptions/48795d1d-efc3-44f3-a40e-3565ec977a1a/resourceGroups/RG1/providers/Microsoft.Network/virtualNetworks/vnet-eastus/subnets/snet-eastus-1",
+          "applicationGatewayBackendAddressPools": [],
+          "loadBalancerBackendAddressPools": [
+            {
+              "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('loadBalancerName'), parameters('backendPoolName'))]"
+            }
+          ],
+          "applicationSecurityGroups": [],
+          "loadBalancerInboundNatPools": [],
+          "enableAcceleratedNetworking": false,
+          "nsgName": "basicNsgvnet-eastus-nic01",
+          "nsgId": "/subscriptions/48795d1d-efc3-44f3-a40e-3565ec977a1a/resourceGroups/RG1/providers/Microsoft.Network/networkSecurityGroups/basicNsgvnet-eastus-nic01",
+          "pipName": "publicIp-vnet-eastus-nic01"
         }
       ]
     },
     "backendPoolName": {
-      "value": "bepool" // Nom du backend pool du Load Balancer
+      "value": "bepool"
     },
     "loadBalancerName": {
-      "value": "alb" // Nom du Load Balancer
+      "value": "alb"
     },
     "loadbalancingRuleFrontEndPort": {
-      "value": 80 // Le port du Load Balancer pour le frontend (ici HTTP standard)
+      "value": 80
     },
     "loadbalancingRuleBackendEndPort": {
-      "value": 80 // Le port backend du Load Balancer (correspond au port frontend)
+      "value": 80
     },
     "loadbalancingRuleProtocol": {
-      "value": "Tcp" // Le protocole utilisé pour la règle de répartition de charge (ici TCP)
+      "value": "Tcp"
     },
     "InboundNATRuleFrontEndPortRangeStart": {
-      "value": 50000 // Plage de ports pour les règles NAT d'entrée
+      "value": 50000
     },
     "vmName": {
-      "value": "VMSS" // Nom du groupe de machines virtuelles (VMSS)
+      "value": "VMSS"
     },
     "virtualMachineScaleSetName": {
-      "value": "VMSS" // Nom du Virtual Machine Scale Set (VMSS)
+      "value": "VMSS"
     },
     "instanceCount": {
-      "value": "2" // Nombre d'instances de VM dans le VMSS
+      "value": "2"
     },
     "instanceSize": {
-      "value": "Standard_D2s_v3" // Taille des instances de VM (Standard D2s_v3 ici)
+      "value": "Standard_D2s_v3"
     },
     "zone": {
       "value": [
         "1",
         "2"
-      ] // Zones de disponibilité où déployer les instances
+      ]
     },
     "zoneBalance": {
-      "value": "false" // Équilibrage de charge entre les zones désactivé
+      "value": "false"
     },
     "platformFaultDomainCount": {
-      "value": "1" // Nombre de domaines de défaillance pour la plateforme (affecte la tolérance aux pannes)
+      "value": "1"
     },
     "scaleInPolicy": {
       "value": {
         "rules": [
-          "Default" // Règle par défaut pour la mise à l'échelle des VM
+          "Default"
         ],
-        "forceDeletion": false // La suppression forcée des instances est désactivée
+        "forceDeletion": false
       }
     },
     "upgradePolicy": {
-      "value": "Manual" // Mise à jour manuelle des instances de VM
+      "value": "Manual"
     },
     "hibernationEnabled": {
-      "value": false // Hibernation des VM désactivée
+      "value": false
     },
     "adminUsername": {
-      "value": "VmssAdmin" // Nom d'utilisateur administrateur pour les VMSS
+      "value": "VmssAdmin"
     },
     "adminPassword": {
-      "value": null // Mot de passe administrateur, qui doit être injecté dans un pipeline ou un autre mécanisme
+      "value": null
     },
     "customData": {
-      "value": null // Données personnalisées, ici non spécifiées
+      "value": null
     },
     "securityType": {
-      "value": "TrustedLaunch" // Type de sécurité (ici, Trusted Launch pour la protection contre les attaques de type bootkit)
+      "value": "TrustedLaunch"
     },
     "secureBoot": {
-      "value": true // Activation du démarrage sécurisé
+      "value": true
     },
     "vTPM": {
-      "value": true // Activation du module TPM virtuel pour les machines virtuelles
+      "value": true
     },
     "vnetLocation": {
-      "value": "eastus" // Localisation du réseau virtuel
+      "value": "eastus"
+    },
+    "vnetExtendedLocation": {
+      "value": {}
     },
     "vnetVirtualNetworkName": {
-      "value": "vnet-eastus" // Nom du réseau virtuel
+      "value": "vnet-eastus"
     },
     "vnetResourceGroupName": {
-      "value": "RG1" // Groupe de ressources du réseau virtuel
+      "value": "RG1"
     },
     "vnetDeploymentName": {
-      "value": "network-interface-associated-virtual-network-20241107201134" // Nom du déploiement de l'interface réseau
+      "value": "network-interface-associated-virtual-network-20241107201134"
     },
     "vnetNatGatewaysWithNewPublicIpAddress": {
-      "value": [] // Pas de nouvelles passerelles NAT avec une adresse IP publique
+      "value": []
     },
     "vnetNatGatewaysWithoutNewPublicIpAddress": {
-      "value": [] // Pas de passerelles NAT sans nouvelle adresse IP publique
+      "value": []
+    },
+    "vnetNatGatewayPublicIpAddressesNewNames": {
+      "value": []
     },
     "vnetNetworkSecurityGroupsNew": {
-      "value": [] // Aucun nouveau groupe de sécurité réseau pour le réseau virtuel
+      "value": []
     },
     "vnetProperties": {
       "value": {
         "subnets": [
           {
-            "name": "snet-eastus-1", // Nom du sous-réseau
+            "name": "snet-eastus-1",
             "properties": {
               "addressPrefixes": [
-                "172.16.0.0/24" // Plage d'adresses IP pour ce sous-réseau
+                "172.16.0.0/24"
               ]
             }
           }
         ],
         "addressSpace": {
           "addressPrefixes": [
-            "172.16.0.0/16" // Plage d'adresses IP pour l'adresse du réseau virtuel
+            "172.16.0.0/16"
           ]
         }
       }

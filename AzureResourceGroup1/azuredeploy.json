@@ -549,7 +549,7 @@
         "count": "[length(parameters('vnetNetworkSecurityGroupsNew'))]"
       }
     }
-  ], 
+  ],
   "outputs": {
     "adminUsername": {
       "type": "string",
