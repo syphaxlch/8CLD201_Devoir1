@@ -27,7 +27,7 @@ jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour 
           csmParametersFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.parameters.json'
           overrideParameters: |
               -AdminPass $(secret)
-          deploymentMode: 'Validation'
+          deploymentMode: 'Validation' # le mode de deployement 'validation' permet de compiler et valider uniquement
       - task: AzureResourceManagerTemplateDeployment@3
         displayName: "Validation VM scale sets"
         name: 'ValidationVMSS'      
@@ -36,12 +36,12 @@ jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour 
           azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
           subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
           action: 'Create Or Update Resource Group'
-          resourceGroupName: 'RG1'
+          resourceGroupName: 'RG1' #nom du ressource groupe
           location: 'East US'
           templateLocation: 'Linked artifact'
           csmFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.json'
           csmParametersFile: '$(Build.SourcesDirectory)\AzureResourceGroup1\azuredeploy.parameters.json'
-          overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)'
+          overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)' #changemenet des valeurs des parametres
           deploymentMode: 'Validation'
 
   - job: Deployment
