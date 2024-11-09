@@ -1,13 +1,14 @@
+
 trigger: 
-  - commentaires
+  - master
 
 pool:
   "default"
 
 variables:
-  - name: CloudInitContent
+  - name: CloudInitContent #La variable qui va stocker la configuration du site
 
-jobs:
+jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour le deploiement
   - job: TestValidation
     displayName: "Validation du modèle ARM"
     steps:
@@ -19,7 +20,7 @@ jobs:
           azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
           subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
           action: 'Create Or Update Resource Group'
-          resourceGroupName: 'RG2'
+          resourceGroupName: 'RG2' #nom du ressource groupe
           location: 'East US'
           templateLocation: 'Linked artifact'
           csmFile: '$(Build.SourcesDirectory)\KeyVault\azuredeploy.json'
