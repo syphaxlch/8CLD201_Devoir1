@@ -17,8 +17,8 @@ jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour 
         name: 'ValidationKeyVaults'
         inputs: 
           deploymentScope: 'Resource Group'
-          azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
-          subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
+          azureResourceManagerConnection: 'Azure subscription 1(15ae0360-119f-45ae-86b7-2b3caf02eea8)'
+          subscriptionId: '15ae0360-119f-45ae-86b7-2b3caf02eea8'
           action: 'Create Or Update Resource Group'
           resourceGroupName: 'RG2' #nom du ressource groupe
           location: 'East US'
@@ -33,8 +33,8 @@ jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour 
         name: 'ValidationVMSS'      
         inputs:
           deploymentScope: 'Resource Group'
-          azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
-          subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
+          azureResourceManagerConnection: 'Azure subscription 1(15ae0360-119f-45ae-86b7-2b3caf02eea8)'
+          subscriptionId: '15ae0360-119f-45ae-86b7-2b3caf02eea8'
           action: 'Create Or Update Resource Group'
           resourceGroupName: 'RG1' #nom du ressource groupe
           location: 'East US'
@@ -54,8 +54,8 @@ jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour 
         name: 'DeploiementKeyVaults'      
         inputs: 
           deploymentScope: 'Resource Group'
-          azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
-          subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
+          azureResourceManagerConnection: 'Azure subscription 1(15ae0360-119f-45ae-86b7-2b3caf02eea8)'
+          subscriptionId: '15ae0360-119f-45ae-86b7-2b3caf02eea8'
           action: 'Create Or Update Resource Group'
           resourceGroupName: 'RG2'
           location: 'East US'
@@ -76,8 +76,6 @@ jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour 
         inputs:
           targetType: 'inline' #Le powershell s'éxecute en mode inline
           script: |
-            # Lire le contenu du fichier cloud-init.txt dans le dossier AzureResourceGroup1 
-            # et le stocker dans la variable $CloudContent.
             $CloudContent = Get-Content -Path .\AzureResourceGroup1\cloud-init.txt -RAW
             
             # Convertir le contenu du fichier texte en chaîne Base64.
@@ -99,8 +97,8 @@ jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour 
         name: 'DeploiementVMSS'      
         inputs:
           deploymentScope: 'Resource Group'
-          azureResourceManagerConnection: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
-          subscriptionId: '48795d1d-efc3-44f3-a40e-3565ec977a1a'
+          azureResourceManagerConnection: 'Azure subscription 1(15ae0360-119f-45ae-86b7-2b3caf02eea8)'
+          subscriptionId: '15ae0360-119f-45ae-86b7-2b3caf02eea8'
           action: 'Create Or Update Resource Group'
           resourceGroupName: 'RG1'
           location: 'East US'
