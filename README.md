@@ -6,6 +6,19 @@ Ce projet automatise le déploiement de deux machines virtuelles (VM) avec un Lo
 ## Objectifs du projet
 L'objectif est de déployer une infrastructure évolutive avec des machines virtuelles Azure, un équilibrage de charge et un scaling automatique basé sur l'utilisation du CPU. Le projet utilise Azure DevOps pour les pipelines CI/CD et Azure Key Vault pour la gestion des secrets.
 
+## 📸 Captures d’écran
+
+Voici quelques captures pour illustrer les étapes et le résultat du déploiement :
+
+### Pipeline Azure DevOps – Exécution réussie
+<img src="https://github.com/user-attachments/assets/b1d8e4ea-f31d-4474-8ce9-00ddcf72fe9b" alt="Site Web Déployé" width="60%" />
+
+### Machines virtuelles dans le portail Azure
+<img src="https://github.com/user-attachments/assets/29e03cd1-5471-446f-bd8d-9f5843a39e60" alt="Site Web Déployé" width="60%" />
+
+### Site Web déployé sur les machines virtuelles
+<img src="https://github.com/user-attachments/assets/c81ae9f9-aa69-4d2c-80be-095052c625e9" alt="Site Web Déployé" width="60%" />
+
 ## Structure du projet
 Le dépôt contient les fichiers suivants :
 
@@ -13,12 +26,6 @@ Le dépôt contient les fichiers suivants :
 - **Script PowerShell (PS1)** pour l'initialisation de l'environnement
 - **Fichiers YAML** pour les pipelines DevOps (CI/CD)
 - **Fichiers JSON** pour les paramètres de déploiement et la configuration
-
-### Étapes de déploiement
-1. Clonez ce dépôt sur votre machine locale ou ouvrez-le directement dans GitHub.
-2. Assurez-vous que les fichiers de configuration sont correctement définis pour votre environnement.
-3. Configurez les pipelines CI/CD dans Azure DevOps en utilisant les fichiers YAML fournis.
-4. Déployez l'infrastructure en exécutant les pipelines. Vous pouvez valider le déploiement en vérifiant que les machines virtuelles sont correctement provisionnées et que l'autoscaling fonctionne comme prévu.
 
 ## Conclusion
 Ce projet fournit une solution complète pour déployer une infrastructure évolutive sur Azure avec des machines virtuelles, un Load Balancer, et un scaling automatique. Il utilise des pratiques modernes d'intégration et de déploiement continu avec Azure DevOps et GitHub, tout en garantissant la sécurité des secrets grâce à Azure Key Vault.
