@@ -18,7 +18,7 @@ jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour 
         inputs: 
           deploymentScope: 'Resource Group'
           azureResourceManagerConnection: 'Azure subscription 1(15ae0360-119f-45ae-86b7-2b3caf02eea8)'
-          subscriptionId: '15ae0360-119f-45ae-86b7-2b3caf02eea8'
+          subscriptionId: ''
           action: 'Create Or Update Resource Group'
           resourceGroupName: 'RG2' #nom du ressource groupe
           location: 'East US'
@@ -34,7 +34,7 @@ jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour 
         inputs:
           deploymentScope: 'Resource Group'
           azureResourceManagerConnection: 'Azure subscription 1(15ae0360-119f-45ae-86b7-2b3caf02eea8)'
-          subscriptionId: '15ae0360-119f-45ae-86b7-2b3caf02eea8'
+          subscriptionId: ''
           action: 'Create Or Update Resource Group'
           resourceGroupName: 'RG1' #nom du ressource groupe
           location: 'East US'
@@ -67,7 +67,7 @@ jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour 
           deploymentMode: 'Incremental'
       - task: AzureKeyVault@2 #Rrecuperation du secret
         inputs:
-          azureSubscription: 'Azure subscription 1(48795d1d-efc3-44f3-a40e-3565ec977a1a)'
+          azureSubscription: 'Azure subscription 1()'
           KeyVaultName: 'keyvaultdevoir11'
           SecretsFilter: 'AdminPass'
           RunAsPreJob: false
@@ -97,8 +97,8 @@ jobs: #Le pipeline est separe sur 2 jobs, un pour la validation et l'autre pour 
         name: 'DeploiementVMSS'      
         inputs:
           deploymentScope: 'Resource Group'
-          azureResourceManagerConnection: 'Azure subscription 1(15ae0360-119f-45ae-86b7-2b3caf02eea8)'
-          subscriptionId: '15ae0360-119f-45ae-86b7-2b3caf02eea8'
+          azureResourceManagerConnection: 'Azure subscription 1()'
+          subscriptionId: ''
           action: 'Create Or Update Resource Group'
           resourceGroupName: 'RG1'
           location: 'East US'
